@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FiveLetters</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #121213;
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    header {
+      width: 100%;
+      max-width: 500px;
+      border-bottom: 1px solid #3a3a3c;
+      padding: 16px 0;
+      text-align: center;
+    }
+
+    header h1 {
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+
+    #message-area {
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 12px;
+    }
+
+    #message {
+      font-size: 0.95rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      padding: 6px 16px;
+      border-radius: 6px;
+      background: #fff;
+      color: #121213;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    #message.show { opacity: 1; }
+
+    #board {
+      display: grid;
+      grid-template-rows: repeat(6, 62px);
+      gap: 6px;
+      margin-top: 20px;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: repeat(5, 62px);
+      gap: 6px;
+    }
+
+    .tile {
+      width: 62px;
+      height: 62px;
+      border: 2px solid #3a3a3c;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: #fff;
+      user-select: none;
+      transition: border-color 0.05s;
+      position: relative;
+    }
+
+    .tile.filled { border-color: #565758; }
+
+    .tile.pop {
+      animation: pop 0.1s ease-in-out;
+    }
+
+    @keyframes pop {
+      0%   { transform: scale(1); }
+      50%  { transform: scale(1.12); }
+      100% { transform: scale(1); }
+    }
+
+    .tile.shake {
+      animation: shake 0.5s ease;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%       { transform: translateX(-6px); }
+      40%       { transform: translateX(6px); }
+      60%       { transform: translateX(-4px); }
+      80%       { transform: translateX(4px); }
+    }
+
+    /* Flip animation — tiles reveal one by one */
+    .tile.flip {
+      animation: flip 0.5s ease forwards;
+    }
+
+    @keyframes flip {
+      0%   { transform: rotateX(0deg); }
+      50%  { transform: rotateX(-90deg); }
+      100% { transform: rotateX(0deg); }
+    }
+
+    .tile.correct  { background: #538d4e; border-color: #538d4e; }
+    .tile.present  { background: #b59f3b; border-color: #b59f3b; }
+    .tile.absent   { background: #3a3a3c; border-color: #3a3a3c; }
+
+    /* On-screen keyboard */
+    #keyboard {
+      margin-top: 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .kb-row {
+      display: flex;
+      gap: 6px;
+    }
+
+    .key {
+      height: 58px;
+      min-width: 43px;
+      padding: 0 6px;
+      border: none;
+      border-radius: 4px;
+      background: #818384;
+      color: #fff;
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+      transition: background 0.2s;
+    }
+
+    .key.wide { min-width: 66px; font-size: 0.78rem; }
+    .key:active { filter: brightness(0.85); }
+
+    .key.correct { background: #538d4e; }
+    .key.present { background: #b59f3b; }
+    .key.absent  { background: #3a3a3c; }
+
+    #play-again {
+      display: none;
+      margin-top: 22px;
+      padding: 12px 32px;
+      background: #538d4e;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    #play-again:hover { background: #6aaf65; }
+  </style>
+</head>
+<body>
+
+<header><h1>FiveLetters</h1></header>
+
+<div id="message-area"><div id="message"></div></div>
+
+<div id="board"></div>
+
+<div id="keyboard">
+  <div class="kb-row" id="kb-row-1"></div>
+  <div class="kb-row" id="kb-row-2"></div>
+  <div class="kb-row" id="kb-row-3"></div>
+</div>
+
+<button id="play-again">Play Again</button>
+
+<script>
+  const WORDS = [
+    "about","above","abuse","actor","acute","admit","adopt","adult","after","again",
+    "agent","agree","ahead","alarm","album","alert","alike","align","alive","alley",
+    "allow","alone","along","alter","angel","anger","angle","angry","annex","apart",
+    "apple","apply","arena","argue","arise","armor","array","aside","asset","atlas",
+    "audio","audit","avoid","awake","award","aware","awful","basic","basis","beach",
+    "begin","being","below","bench","birth","black","blade","blame","bland","blank",
+    "blast","blaze","bleed","blend","bless","blind","block","blood","bloom","blown",
+    "blunt","board","boast","bonus","boost","booth","bound","brace","brain","brand",
+    "brave","bread","break","breed","brick","bride","brief","bring","broad","broke",
+    "brook","brown","brush","build","built","burnt","buyer","cabin","cable","camel",
+    "cargo","carry","catch","cause","chain","chair","chart","chase","cheap","check",
+    "cheek","cheer","chess","chest","chief","child","china","chord","civil","claim",
+    "class","clean","clear","clerk","click","cliff","climb","cling","clock","clone",
+    "close","cloth","cloud","coach","coast","color","comic","comma","coral","couch",
+    "could","count","court","cover","crack","craft","crane","crash","crazy","cream",
+    "creek","crime","cross","crowd","cruel","crush","curve","cycle","daily","dance",
+    "debut","delta","dense","depth","devil","dirty","disco","dodge","doing","doubt",
+    "dough","draft","drain","drama","drank","drawn","dread","dream","dress","drift",
+    "drink","drive","drone","drove","drown","dryer","duvet","dwarf","eagle","early",
+    "earth","eight","elite","email","empty","enemy","enjoy","enter","entry","equal",
+    "error","essay","event","every","exact","exist","extra","fable","faced","faith",
+    "false","fancy","fatal","fault","feast","fence","fetch","fever","field","fifth",
+    "fifty","fight","final","first","fixed","flame","flank","flash","flask","flesh",
+    "float","floor","flour","fluid","focus","force","forge","forth","forum","found",
+    "frame","frank","fraud","fresh","front","frost","froze","fruit","fully","fungi",
+    "funny","giant","given","gland","glare","glass","glide","globe","gloom","glory",
+    "glove","going","grace","grade","grain","grand","grant","graph","grasp","grass",
+    "grave","great","greed","green","greet","grief","grind","groan","grope","gross",
+    "group","grove","grown","guard","guess","guest","guide","guild","guilt","guise",
+    "gusto","happy","harsh","haste","haven","heart","heavy","hence","herbs","hinge",
+    "hippo","hired","holly","honey","honor","horse","hotel","hours","house","human",
+    "humid","humor","hurry","hyena","ideal","image","imply","index","inner","input",
+    "irony","issue","ivory","jewel","joint","joker","joust","judge","juice","jumbo",
+    "junta","juice","karma","kneel","knife","knock","known","label","lance","large",
+    "laser","later","laugh","layer","learn","least","legal","lemon","level","light",
+    "limit","linen","liver","lived","local","lodge","logic","loose","lover","lower",
+    "loyal","lucky","lunar","lying","magic","major","maker","manor","maple","march",
+    "marry","match","maxim","media","merit","metal","might","minor","minus","mixed",
+    "money","month","moral","mouse","mouth","moved","movie","muddy","multi","music",
+    "naive","named","nasty","naval","nerve","never","night","noble","noise","north",
+    "noted","novel","nurse","nymph","occur","ocean","offer","often","olive","onset",
+    "orbit","order","other","ought","outer","owner","oxide","ozone","paint","panel",
+    "panic","paper","patch","pause","peace","pearl","pedal","penny","phase","phone",
+    "photo","piano","piece","pilot","pitch","pixel","pizza","place","plain","plane",
+    "plant","plate","plaza","plead","pluck","plumb","plume","plunk","point","polar",
+    "polka","pool","posed","pound","power","press","price","pride","prime","print",
+    "prior","prize","probe","prone","proof","prose","proud","prove","psalm","pulse",
+    "purse","queen","query","quest","queue","quick","quiet","quota","quote","rabbi",
+    "radar","radio","raise","rally","ranch","range","rapid","ratio","reach","ready",
+    "realm","rebel","refer","reign","relax","relay","repay","repel","reply","repot",
+    "reset","rider","ridge","rifle","right","rigid","risky","rival","river","robot",
+    "rocky","rodeo","rouge","rough","round","route","royal","rugby","ruler","rural",
+    "sadly","saint","salad","sauce","scale","scare","scene","scent","scone","scope",
+    "score","scout","screw","sedan","sense","serve","seven","shade","shaft","shake",
+    "shall","shape","share","shark","sharp","sheer","sheet","shelf","shell","shift",
+    "shine","shirt","shock","shore","short","shout","shove","sight","sigma","since",
+    "sixth","sixty","sized","skill","skull","slave","sleep","slick","slide","slim",
+    "slope","smart","smell","smile","smite","smith","smoke","snack","snake","solar",
+    "solid","solve","sorry","south","space","spare","spark","speak","speed","spend",
+    "spill","spine","sport","squad","stack","staff","stage","stain","stair","stake",
+    "stale","stamp","stand","stark","start","state","stays","steam","steel","steep",
+    "steer","stern","stick","stiff","still","stock","stomp","stone","stood","store",
+    "storm","story","stout","stove","strap","straw","stray","strip","stuck","study",
+    "style","sugar","suite","super","surge","swamp","swear","sweep","sweet","swept",
+    "swift","swing","swirl","sword","sworn","swung","table","talon","tango","taste",
+    "teach","teeth","tempo","tense","tenth","terms","thank","theme","there","thick",
+    "thing","think","third","those","three","threw","throw","thumb","tiger","tight",
+    "timer","title","toast","today","token","tooth","topic","total","touch","tough",
+    "towel","tower","toxic","trace","track","trade","trail","train","trait","tramp",
+    "trash","trawl","treat","trend","trial","tribe","tried","trick","troop","trout",
+    "truce","truck","truly","trump","trunk","trust","truth","tuned","tumor","twist",
+    "tying","typed","ultra","uncle","under","union","unite","unity","until","upper",
+    "upset","urban","usage","usual","utter","valid","value","vault","video","vigor",
+    "vinyl","viola","viral","virus","visit","vista","vital","voice","voter","vague",
+    "wagon","waste","watch","water","weave","wedge","weigh","weird","whale","wheat",
+    "wheel","where","which","while","white","whole","whose","wider","witch","woman",
+    "women","world","worry","worse","worst","worth","would","wound","write","wrong",
+    "yacht","yearn","yield","young","yours","youth","zebra","zones"
+  ].filter(w => w.length === 5);
+
+  const KEYBOARD_ROWS = [
+    ['q','w','e','r','t','y','u','i','o','p'],
+    ['a','s','d','f','g','h','j','k','l'],
+    ['Enter','z','x','c','v','b','n','m','⌫']
+  ];
+
+  let secret, currentRow, currentCol, gameOver, board, tileEls;
+
+  function pickWord() {
+    return WORDS[Math.floor(Math.random() * WORDS.length)].toUpperCase();
+  }
+
+  function buildBoard() {
+    const boardEl = document.getElementById('board');
+    boardEl.innerHTML = '';
+    tileEls = [];
+    for (let r = 0; r < 6; r++) {
+      const row = document.createElement('div');
+      row.className = 'row';
+      tileEls[r] = [];
+      for (let c = 0; c < 5; c++) {
+        const tile = document.createElement('div');
+        tile.className = 'tile';
+        row.appendChild(tile);
+        tileEls[r][c] = tile;
+      }
+      boardEl.appendChild(row);
+    }
+    board = Array.from({length: 6}, () => Array(5).fill(''));
+  }
+
+  function buildKeyboard() {
+    const rowIds = ['kb-row-1', 'kb-row-2', 'kb-row-3'];
+    KEYBOARD_ROWS.forEach((keys, ri) => {
+      const rowEl = document.getElementById(rowIds[ri]);
+      rowEl.innerHTML = '';
+      keys.forEach(k => {
+        const btn = document.createElement('button');
+        btn.className = 'key' + (k === 'Enter' || k === '⌫' ? ' wide' : '');
+        btn.textContent = k;
+        btn.dataset.key = k;
+        btn.addEventListener('click', () => handleKey(k));
+        rowEl.appendChild(btn);
+      });
+    });
+  }
+
+  function getKeyEl(letter) {
+    return document.querySelector(`[data-key="${letter}"]`);
+  }
+
+  function showMessage(text, persist = false) {
+    const el = document.getElementById('message');
+    el.textContent = text;
+    el.classList.add('show');
+    if (!persist) setTimeout(() => el.classList.remove('show'), 1800);
+  }
+
+  function addLetter(letter) {
+    if (gameOver || currentCol >= 5) return;
+    board[currentRow][currentCol] = letter;
+    const tile = tileEls[currentRow][currentCol];
+    tile.textContent = letter;
+    tile.classList.add('filled');
+    tile.classList.remove('pop');
+    void tile.offsetWidth; // reflow to restart animation
+    tile.classList.add('pop');
+    currentCol++;
+  }
+
+  function deleteLetter() {
+    if (gameOver || currentCol <= 0) return;
+    currentCol--;
+    board[currentRow][currentCol] = '';
+    const tile = tileEls[currentRow][currentCol];
+    tile.textContent = '';
+    tile.classList.remove('filled');
+  }
+
+  function submitGuess() {
+    if (gameOver) return;
+    if (currentCol < 5) {
+      shakeRow(currentRow);
+      showMessage('Not enough letters');
+      return;
+    }
+
+    const guess = board[currentRow].join('');
+    const result = evaluate(guess);
+    revealRow(currentRow, result, guess);
+  }
+
+  function evaluate(guess) {
+    const result = Array(5).fill('absent');
+    const secretArr = secret.split('');
+    const guessArr  = guess.split('');
+    const used = Array(5).fill(false);
+
+    // First pass: correct
+    for (let i = 0; i < 5; i++) {
+      if (guessArr[i] === secretArr[i]) {
+        result[i] = 'correct';
+        used[i] = true;
+      }
+    }
+    // Second pass: present
+    for (let i = 0; i < 5; i++) {
+      if (result[i] === 'correct') continue;
+      for (let j = 0; j < 5; j++) {
+        if (!used[j] && guessArr[i] === secretArr[j]) {
+          result[i] = 'present';
+          used[j] = true;
+          break;
+        }
+      }
+    }
+    return result;
+  }
+
+  function revealRow(row, result, guess) {
+    const DELAY = 300; // ms per tile
+
+    result.forEach((state, col) => {
+      setTimeout(() => {
+        const tile = tileEls[row][col];
+        tile.classList.add('flip');
+
+        setTimeout(() => {
+          tile.classList.add(state);
+        }, DELAY / 2);
+      }, col * DELAY);
+    });
+
+    const totalDelay = 5 * DELAY;
+
+    setTimeout(() => {
+      // Update keyboard colours (never downgrade: correct > present > absent)
+      const priority = { correct: 3, present: 2, absent: 1 };
+      result.forEach((state, col) => {
+        const letter = guess[col].toLowerCase();
+        const keyEl  = getKeyEl(letter);
+        if (!keyEl) return;
+        const cur = priority[keyEl.dataset.state] || 0;
+        if (priority[state] > cur) {
+          keyEl.classList.remove('correct', 'present', 'absent');
+          keyEl.classList.add(state);
+          keyEl.dataset.state = state;
+        }
+      });
+
+      const won = result.every(s => s === 'correct');
+      if (won) {
+        gameOver = true;
+        const msgs = ['Genius!', 'Magnificent!', 'Impressive!', 'Splendid!', 'Great!', 'Phew!'];
+        showMessage(msgs[currentRow] || 'Nice!', true);
+        document.getElementById('play-again').style.display = 'inline-block';
+        return;
+      }
+
+      currentRow++;
+      currentCol = 0;
+
+      if (currentRow >= 6) {
+        gameOver = true;
+        showMessage(secret, true);
+        document.getElementById('play-again').style.display = 'inline-block';
+      }
+    }, totalDelay);
+  }
+
+  function shakeRow(row) {
+    tileEls[row].forEach(t => {
+      t.classList.remove('shake');
+      void t.offsetWidth;
+      t.classList.add('shake');
+    });
+  }
+
+  function handleKey(key) {
+    if (gameOver) return;
+    if (key === 'Enter') {
+      submitGuess();
+    } else if (key === '⌫' || key === 'Backspace') {
+      deleteLetter();
+    } else if (/^[a-zA-Z]$/.test(key)) {
+      addLetter(key.toUpperCase());
+    }
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+    handleKey(e.key === 'Backspace' ? '⌫' : e.key);
+  });
+
+  document.getElementById('play-again').addEventListener('click', init);
+
+  function init() {
+    secret     = pickWord();
+    currentRow = 0;
+    currentCol = 0;
+    gameOver   = false;
+
+    buildBoard();
+    buildKeyboard();
+
+    document.getElementById('message').classList.remove('show');
+    document.getElementById('play-again').style.display = 'none';
+  }
+
+  init();
+</script>
+</body>
+</html>
