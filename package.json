@@ -1,0 +1,24 @@
+{
+  "name": "wordle-game",
+  "version": "1.0.0",
+  "description": "",
+  "main": "generate-icons.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shaystudio24/FiveLetters.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/shaystudio24/FiveLetters/issues"
+  },
+  "homepage": "https://github.com/shaystudio24/FiveLetters#readme",
+  "dependencies": {
+    "canvas": "^3.2.3"
+  }
+}
