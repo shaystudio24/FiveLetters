@@ -10,27 +10,90 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+    /* ── Responsive size tokens ─────────────────────────────────────────────── */
+    :root {
+      --tile:      62px;   /* board tile width & height */
+      --tile-gap:  6px;    /* gap between tiles */
+      --key-h:     58px;   /* keyboard key height */
+      --key-w:     43px;   /* keyboard key min-width */
+      --key-wide:  66px;   /* Enter / ⌫ key min-width */
+      --key-gap:   6px;    /* gap between keys in a row */
+      --kb-gap:    8px;    /* gap between keyboard rows */
+      --board-mt:  20px;   /* board margin-top */
+      --kb-mt:     28px;   /* keyboard margin-top */
+      --hdr-pad:   16px;   /* header block padding */
+      --h1-size:   2rem;   /* header title font-size */
+      --msg-h:     36px;   /* message-area height */
+      --banner-py: 8px;    /* welcome-banner vertical padding */
+    }
+
+    /* Narrow phones (≤ 500 px wide): keyboard row-1 is 10 keys — shrink keys
+       so they don't overflow: 10 × 33 + 9 × 4 = 366 px < 375 px ✓            */
+    @media (max-width: 500px) {
+      :root {
+        --key-w:    33px;
+        --key-wide: 51px;
+        --key-gap:  4px;
+      }
+    }
+
+    /* Medium-short screens (≤ 780 px tall): compress vertically               */
+    @media (max-height: 780px) {
+      :root {
+        --tile:      54px;
+        --tile-gap:  5px;
+        --key-h:     50px;
+        --kb-gap:    6px;
+        --board-mt:  12px;
+        --kb-mt:     16px;
+        --hdr-pad:   12px;
+        --h1-size:   1.75rem;
+        --msg-h:     28px;
+        --banner-py: 5px;
+      }
+    }
+
+    /* Short screens (≤ 680 px tall): iPhone SE / iPhone 8
+       Budget: 41+28+22+6+302+10+142 = 551 px → fits 667 px viewport ✓        */
+    @media (max-height: 680px) {
+      :root {
+        --tile:      47px;
+        --tile-gap:  4px;
+        --key-h:     44px;
+        --kb-gap:    5px;
+        --board-mt:  6px;
+        --kb-mt:     10px;
+        --hdr-pad:   8px;
+        --h1-size:   1.5rem;
+        --msg-h:     22px;
+        --banner-py: 2px;
+      }
+    }
+    /* ─────────────────────────────────────────────────────────────────────── */
+
     body {
       font-family: 'Segoe UI', system-ui, sans-serif;
       background: #F5F0E8;
       color: #2C2416;
-      min-height: 100vh;
+      min-height: 100vh;    /* fallback for older browsers */
+      min-height: 100svh;   /* svh = viewport minus browser chrome on mobile */
       display: flex;
       flex-direction: column;
       align-items: center;
+      overflow-x: hidden;   /* prevent horizontal scroll if anything bleeds */
     }
 
     header {
       width: 100%;
       max-width: 500px;
       border-bottom: 1px solid #C8BFB0;
-      padding: 16px 0;
+      padding: var(--hdr-pad) 0;
       text-align: center;
       position: relative;
     }
 
     header h1 {
-      font-size: 2rem;
+      font-size: var(--h1-size);
       font-weight: 800;
       letter-spacing: 0.18em;
       text-transform: uppercase;
@@ -56,7 +119,7 @@
       font-size: 0.88rem;
       font-weight: 600;
       color: #8B6F47;
-      padding: 8px 20px;
+      padding: var(--banner-py) 20px;
       opacity: 0;
       transition: opacity 0.5s ease;
       pointer-events: none;
@@ -116,18 +179,18 @@
     #tree-popup .tree-close:hover { background: #8FAF88; }
 
     #message-area {
-      height: 36px;
+      height: var(--msg-h);
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-top: 12px;
+      margin-top: 8px;
     }
 
     #message {
       font-size: 0.95rem;
       font-weight: 700;
       letter-spacing: 0.05em;
-      padding: 6px 16px;
+      padding: 5px 14px;
       border-radius: 6px;
       background: #2C2416;
       color: #F5F0E8;
@@ -139,25 +202,26 @@
 
     #board {
       display: grid;
-      grid-template-rows: repeat(6, 62px);
-      gap: 6px;
-      margin-top: 20px;
+      grid-template-rows: repeat(6, var(--tile));
+      gap: var(--tile-gap);
+      margin-top: var(--board-mt);
     }
 
     .row {
       display: grid;
-      grid-template-columns: repeat(5, 62px);
-      gap: 6px;
+      grid-template-columns: repeat(5, var(--tile));
+      gap: var(--tile-gap);
     }
 
     .tile {
-      width: 62px;
-      height: 62px;
+      width: var(--tile);
+      height: var(--tile);
       border: 2px solid #C8BFB0;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 2rem;
+      /* Font scales proportionally with tile size */
+      font-size: calc(var(--tile) * 0.516);
       font-weight: 800;
       text-transform: uppercase;
       color: #2C2416;
@@ -207,22 +271,26 @@
 
     /* On-screen keyboard */
     #keyboard {
-      margin-top: 28px;
+      margin-top: var(--kb-mt);
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: var(--kb-gap);
       align-items: center;
+      /* Keep keyboard fully inside the viewport width */
+      width: 100%;
+      max-width: 500px;
     }
 
     .kb-row {
       display: flex;
-      gap: 6px;
+      gap: var(--key-gap);
+      justify-content: center;
     }
 
     .key {
-      height: 58px;
-      min-width: 43px;
-      padding: 0 6px;
+      height: var(--key-h);
+      min-width: var(--key-w);
+      padding: 0 4px;
       border: none;
       border-radius: 4px;
       background: #D6CEC3;
@@ -236,9 +304,11 @@
       justify-content: center;
       user-select: none;
       transition: background 0.2s;
+      /* Prevent keys from being tapped accidentally on touch devices */
+      touch-action: manipulation;
     }
 
-    .key.wide { min-width: 66px; font-size: 0.78rem; }
+    .key.wide { min-width: var(--key-wide); font-size: 0.78rem; }
     .key:active { filter: brightness(0.9); }
 
     .key.correct { background: #7D9B76; color: #fff; }
@@ -247,8 +317,8 @@
 
     #play-again {
       display: none;
-      margin-top: 22px;
-      padding: 12px 32px;
+      margin-top: 16px;
+      padding: 10px 28px;
       background: #7D9B76;
       color: #fff;
       border: none;
@@ -259,6 +329,7 @@
       text-transform: uppercase;
       cursor: pointer;
       transition: background 0.15s;
+      touch-action: manipulation;
     }
 
     #play-again:hover { background: #8FAF88; }
