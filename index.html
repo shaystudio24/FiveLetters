@@ -337,23 +337,35 @@
     .key.absent  { background: #A89F91; color: #fff; }
 
     #play-again {
+      /* Taken out of document flow so overflow:hidden on body can't clip it.
+         z-index 1001 keeps it above the definition card (1000) so it's always
+         tappable. Clicking it calls init(), which hides the card + this button
+         and starts the new round.                                              */
       display: none;
-      margin-top: 16px;
-      padding: 10px 28px;
+      position: fixed;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1001;
+
+      padding: 13px 36px;
       background: #7D9B76;
       color: #fff;
       border: none;
-      border-radius: 6px;
+      border-radius: 8px;
       font-size: 1rem;
       font-weight: 700;
       letter-spacing: 0.06em;
       text-transform: uppercase;
+      white-space: nowrap;
       cursor: pointer;
       transition: background 0.15s;
       touch-action: manipulation;
+      box-shadow: 0 4px 20px rgba(44, 36, 22, 0.28);
     }
 
-    #play-again:hover { background: #8FAF88; }
+    #play-again:hover  { background: #8FAF88; }
+    #play-again:active { background: #6d8a66; }
 
     #definition-card {
       display: none;
