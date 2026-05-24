@@ -2,13 +2,23 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <title>FiveLetters</title>
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#7D9B76" />
   <link rel="apple-touch-icon" href="icon-192.png" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ── Native-app scroll lock ──────────────────────────────────────────────── */
+    html {
+      height: 100%;
+      overflow: hidden;            /* belt */
+      overscroll-behavior: none;   /* Android: kill pull-to-refresh + overscroll glow */
+    }
+    /* ─────────────────────────────────────────────────────────────────────── */
 
     /* ── Responsive size tokens ─────────────────────────────────────────────── */
     :root {
@@ -75,12 +85,23 @@
       font-family: 'Segoe UI', system-ui, sans-serif;
       background: #F5F0E8;
       color: #2C2416;
-      min-height: 100vh;    /* fallback for older browsers */
-      min-height: 100svh;   /* svh = viewport minus browser chrome on mobile */
+
+      /* ── Lock body to viewport — no scroll, no bounce, feels native ───────── */
+      position: fixed;              /* iOS: anchors body so Safari can't bounce-scroll it */
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;                 /* fill the viewport; position:fixed makes this = 100vw/vh */
+      overflow: hidden;             /* clip anything that would cause scroll */
+      overscroll-behavior: none;    /* Android: belt-and-suspenders against overscroll */
+      -webkit-overflow-scrolling: auto; /* iOS: disable momentum (kinetic) scrolling */
+      touch-action: none;           /* prevent browser-native panning / pinch-zoom on the page */
+      user-select: none;            /* no text selection (native-app feel) */
+      /* ─────────────────────────────────────────────────────────────────────── */
+
       display: flex;
       flex-direction: column;
       align-items: center;
-      overflow-x: hidden;   /* prevent horizontal scroll if anything bleeds */
     }
 
     header {
