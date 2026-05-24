@@ -9,8 +9,8 @@
 
     body {
       font-family: 'Segoe UI', system-ui, sans-serif;
-      background: #121213;
-      color: #fff;
+      background: #F5F0E8;
+      color: #2C2416;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
@@ -20,9 +20,10 @@
     header {
       width: 100%;
       max-width: 500px;
-      border-bottom: 1px solid #3a3a3c;
+      border-bottom: 1px solid #C8BFB0;
       padding: 16px 0;
       text-align: center;
+      position: relative;
     }
 
     header h1 {
@@ -31,6 +32,85 @@
       letter-spacing: 0.18em;
       text-transform: uppercase;
     }
+
+    #streak-badge {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #8B6F47;
+      background: #EDE6D6;
+      border: 1px solid #C8BFB0;
+      border-radius: 20px;
+      padding: 4px 10px;
+      white-space: nowrap;
+      letter-spacing: 0.03em;
+    }
+
+    #welcome-banner {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: #8B6F47;
+      padding: 8px 20px;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+      pointer-events: none;
+    }
+
+    #welcome-banner.show { opacity: 1; }
+
+    #tree-popup {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.92);
+      width: min(320px, 88vw);
+      padding: 28px 24px 20px;
+      background: #EDE6D6;
+      border: 1px solid #C8BFB0;
+      border-radius: 12px;
+      box-shadow: 0 8px 32px rgba(44, 36, 22, 0.18), 0 2px 8px rgba(44, 36, 22, 0.10);
+      text-align: center;
+      z-index: 1001;
+      opacity: 0;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+    }
+
+    #tree-popup.show {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    #tree-popup .tree-emoji {
+      font-size: 3rem;
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    #tree-popup .tree-msg {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #2C2416;
+      line-height: 1.4;
+      margin-bottom: 18px;
+    }
+
+    #tree-popup .tree-close {
+      padding: 8px 24px;
+      background: #7D9B76;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    #tree-popup .tree-close:hover { background: #8FAF88; }
 
     #message-area {
       height: 36px;
@@ -46,8 +126,8 @@
       letter-spacing: 0.05em;
       padding: 6px 16px;
       border-radius: 6px;
-      background: #fff;
-      color: #121213;
+      background: #2C2416;
+      color: #F5F0E8;
       opacity: 0;
       transition: opacity 0.2s;
     }
@@ -70,20 +150,20 @@
     .tile {
       width: 62px;
       height: 62px;
-      border: 2px solid #3a3a3c;
+      border: 2px solid #C8BFB0;
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 2rem;
       font-weight: 800;
       text-transform: uppercase;
-      color: #fff;
+      color: #2C2416;
       user-select: none;
       transition: border-color 0.05s;
       position: relative;
     }
 
-    .tile.filled { border-color: #565758; }
+    .tile.filled { border-color: #8C8279; }
 
     .tile.pop {
       animation: pop 0.1s ease-in-out;
@@ -118,9 +198,9 @@
       100% { transform: rotateX(0deg); }
     }
 
-    .tile.correct  { background: #538d4e; border-color: #538d4e; }
-    .tile.present  { background: #b59f3b; border-color: #b59f3b; }
-    .tile.absent   { background: #3a3a3c; border-color: #3a3a3c; }
+    .tile.correct  { background: #7D9B76; border-color: #7D9B76; color: #fff; }
+    .tile.present  { background: #C4A35A; border-color: #C4A35A; color: #fff; }
+    .tile.absent   { background: #A89F91; border-color: #A89F91; color: #fff; }
 
     /* On-screen keyboard */
     #keyboard {
@@ -142,8 +222,8 @@
       padding: 0 6px;
       border: none;
       border-radius: 4px;
-      background: #818384;
-      color: #fff;
+      background: #D6CEC3;
+      color: #2C2416;
       font-size: 0.85rem;
       font-weight: 700;
       text-transform: uppercase;
@@ -156,17 +236,17 @@
     }
 
     .key.wide { min-width: 66px; font-size: 0.78rem; }
-    .key:active { filter: brightness(0.85); }
+    .key:active { filter: brightness(0.9); }
 
-    .key.correct { background: #538d4e; }
-    .key.present { background: #b59f3b; }
-    .key.absent  { background: #3a3a3c; }
+    .key.correct { background: #7D9B76; color: #fff; }
+    .key.present { background: #C4A35A; color: #fff; }
+    .key.absent  { background: #A89F91; color: #fff; }
 
     #play-again {
       display: none;
       margin-top: 22px;
       padding: 12px 32px;
-      background: #538d4e;
+      background: #7D9B76;
       color: #fff;
       border: none;
       border-radius: 6px;
@@ -178,13 +258,82 @@
       transition: background 0.15s;
     }
 
-    #play-again:hover { background: #6aaf65; }
+    #play-again:hover { background: #8FAF88; }
+
+    #definition-card {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.92);
+      width: min(340px, 88vw);
+      padding: 22px 24px;
+      background: #EDE6D6;
+      border: 1px solid #C8BFB0;
+      border-radius: 12px;
+      box-shadow: 0 8px 32px rgba(44, 36, 22, 0.18), 0 2px 8px rgba(44, 36, 22, 0.10);
+      text-align: left;
+      z-index: 1000;
+      opacity: 0;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+    }
+
+    #definition-card.show {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    #definition-card .def-word {
+      font-size: 1.1rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #2C2416;
+      margin-bottom: 6px;
+    }
+
+    #definition-card .def-pos {
+      font-size: 0.72rem;
+      font-style: italic;
+      font-weight: 600;
+      color: #8B6F47;
+      text-transform: lowercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 8px;
+    }
+
+    #definition-card .def-divider {
+      border: none;
+      border-top: 1px solid #C8BFB0;
+      margin: 0 0 10px;
+    }
+
+    #definition-card .def-text {
+      font-size: 0.9rem;
+      color: #2C2416;
+      line-height: 1.5;
+    }
+
+    #confetti-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 999;
+    }
   </style>
 </head>
 <body>
 
-<header><h1>FiveLetters</h1></header>
+<canvas id="confetti-canvas"></canvas>
+<header>
+  <h1>FiveLetters</h1>
+  <span id="streak-badge"></span>
+</header>
 
+<div id="welcome-banner">🌱 Let's plant a seedling!</div>
 <div id="message-area"><div id="message"></div></div>
 
 <div id="board"></div>
@@ -195,7 +344,18 @@
   <div class="kb-row" id="kb-row-3"></div>
 </div>
 
-<button id="play-again">Play Again</button>
+<button id="play-again">Keep Growing 🌱</button>
+<div id="tree-popup">
+  <span class="tree-emoji">🌳</span>
+  <div class="tree-msg">Congrats, you've grown a tree!</div>
+  <button class="tree-close" id="tree-close">Amazing!</button>
+</div>
+<div id="definition-card">
+  <div class="def-word" id="def-word"></div>
+  <div class="def-pos" id="def-pos"></div>
+  <hr class="def-divider" />
+  <div class="def-text" id="def-text"></div>
+</div>
 
 <script>
   const WORDS = [
@@ -285,7 +445,22 @@
     ['Enter','z','x','c','v','b','n','m','⌫']
   ];
 
-  let secret, currentRow, currentCol, gameOver, board, tileEls;
+  let secret, currentRow, currentCol, gameOver, validating, board, tileEls;
+  let streak = parseInt(localStorage.getItem('fiveletters-streak') || '0', 10);
+
+  function streakEmoji(n) {
+    if (n === 0)  return '🕳️';
+    if (n <= 10)  return '🌱';
+    if (n <= 20)  return '🌿';
+    if (n <= 30)  return '🪴';
+    if (n <= 40)  return '🪵';
+    return '🌳';
+  }
+
+  function updateStreakBadge() {
+    document.getElementById('streak-badge').textContent =
+      `${streakEmoji(streak)} ${streak}`;
+  }
 
   function pickWord() {
     return WORDS[Math.floor(Math.random() * WORDS.length)].toUpperCase();
@@ -358,15 +533,42 @@
     tile.classList.remove('filled');
   }
 
-  function submitGuess() {
-    if (gameOver) return;
+  // Returns true if word exists in dictionary, true on network failure (offline-safe)
+  async function isRealWord(word) {
+    try {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 3000);
+      const res = await fetch(
+        `https://api.dictionaryapi.dev/api/v2/entries/en/${word}`,
+        { signal: controller.signal }
+      );
+      clearTimeout(timer);
+      return res.ok; // 200 → valid, 404 → not a word
+    } catch {
+      return true; // timeout or network error → allow guess
+    }
+  }
+
+  async function submitGuess() {
+    if (gameOver || validating) return;
     if (currentCol < 5) {
       shakeRow(currentRow);
       showMessage('Not enough letters');
       return;
     }
 
-    const guess = board[currentRow].join('');
+    const guess = board[currentRow].join(''); // uppercase
+    validating = true;
+
+    const valid = await isRealWord(guess.toLowerCase());
+    validating = false;
+
+    if (!valid) {
+      shakeRow(currentRow);
+      return;
+    }
+
+    document.getElementById('message').classList.remove('show');
     const result = evaluate(guess);
     revealRow(currentRow, result, guess);
   }
@@ -432,9 +634,19 @@
       const won = result.every(s => s === 'correct');
       if (won) {
         gameOver = true;
+        streak++;
+        localStorage.setItem('fiveletters-streak', streak);
+        updateStreakBadge();
         const msgs = ['Genius!', 'Magnificent!', 'Impressive!', 'Splendid!', 'Great!', 'Phew!'];
         showMessage(msgs[currentRow] || 'Nice!', true);
         document.getElementById('play-again').style.display = 'inline-block';
+        if (streak === 50) {
+          launchRainbowConfetti();
+          showTreePopup();
+        } else {
+          launchConfetti();
+        }
+        showDefinition(secret);
         return;
       }
 
@@ -443,8 +655,13 @@
 
       if (currentRow >= 6) {
         gameOver = true;
+        streak = 0;
+        localStorage.setItem('fiveletters-streak', streak);
+        updateStreakBadge();
         showMessage(secret, true);
         document.getElementById('play-again').style.display = 'inline-block';
+        launchEmoji();
+        showDefinition(secret);
       }
     }, totalDelay);
   }
@@ -458,7 +675,7 @@
   }
 
   function handleKey(key) {
-    if (gameOver) return;
+    if (gameOver || validating) return;
     if (key === 'Enter') {
       submitGuess();
     } else if (key === '⌫' || key === 'Backspace') {
@@ -473,19 +690,303 @@
     handleKey(e.key === 'Backspace' ? '⌫' : e.key);
   });
 
-  document.getElementById('play-again').addEventListener('click', init);
+  document.getElementById('play-again').addEventListener('click', () => {
+    document.getElementById('welcome-banner').classList.remove('show');
+    init();
+  });
+
+  // ── Definition card ───────────────────────────────────────────────────────
+  async function showDefinition(word) {
+    try {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 4000);
+      const res = await fetch(
+        `https://api.dictionaryapi.dev/api/v2/entries/en/${word.toLowerCase()}`,
+        { signal: controller.signal }
+      );
+      clearTimeout(timer);
+      if (!res.ok) return;
+
+      const data = await res.json();
+      const meaning = data?.[0]?.meanings?.[0];
+      const pos     = meaning?.partOfSpeech;
+      const def     = meaning?.definitions?.[0]?.definition;
+      if (!pos || !def) return;
+
+      const card = document.getElementById('definition-card');
+      document.getElementById('def-word').textContent = secret;
+      document.getElementById('def-pos').textContent  = pos;
+      document.getElementById('def-text').textContent = def;
+      card.style.display = 'block';
+      requestAnimationFrame(() => card.classList.add('show'));
+    } catch {
+      // API unreachable — skip silently
+    }
+  }
+  // ─────────────────────────────────────────────────────────────────────────
+
+  // ── Rainbow confetti (50-win milestone) ──────────────────────────────────
+  function launchRainbowConfetti() {
+    const canvas = document.getElementById('confetti-canvas');
+    const ctx    = canvas.getContext('2d');
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const COLORS = [
+      '#FF595E','#FF924C','#FFCA3A','#8AC926','#1982C4',
+      '#6A4C93','#FF6B9D','#C77DFF','#06D6A0','#FFD166',
+      '#EF476F','#118AB2','#F4A261','#E9C46A','#2A9D8F',
+    ];
+
+    const TOTAL      = 3500;
+    const FADE_AT    = 2700;
+    const COUNT      = 220;
+    const GRAVITY    = 0.14;
+    const WOBBLE_MAG = 0.07;
+
+    const pieces = Array.from({ length: COUNT }, () => {
+      const w = 7 + Math.random() * 10;
+      const h = 4 + Math.random() * 8;
+      return {
+        x:     Math.random() * canvas.width,
+        y:     -12 - Math.random() * 60,
+        vx:    (Math.random() - 0.5) * 9,
+        vy:    0.5 + Math.random() * 5,
+        w, h,
+        angle: Math.random() * Math.PI * 2,
+        spin:  (Math.random() - 0.5) * 0.22,
+        color: COLORS[Math.floor(Math.random() * COLORS.length)],
+      };
+    });
+
+    let rafId;
+    const startTime = performance.now();
+
+    function frame(now) {
+      const elapsed = now - startTime;
+      if (elapsed >= TOTAL) { ctx.clearRect(0, 0, canvas.width, canvas.height); return; }
+
+      const alpha = elapsed < FADE_AT ? 1 : 1 - (elapsed - FADE_AT) / (TOTAL - FADE_AT);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.globalAlpha = Math.max(0, alpha);
+
+      for (const p of pieces) {
+        p.vy    += GRAVITY;
+        p.vx    += (Math.random() - 0.5) * WOBBLE_MAG;
+        p.x     += p.vx;
+        p.y     += p.vy;
+        p.angle += p.spin;
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.angle);
+        ctx.fillStyle = p.color;
+        ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+        ctx.restore();
+      }
+
+      ctx.globalAlpha = 1;
+      rafId = requestAnimationFrame(frame);
+    }
+
+    if (window._confettiRaf) cancelAnimationFrame(window._confettiRaf);
+    window._confettiRaf = rafId = requestAnimationFrame(frame);
+  }
+  // ─────────────────────────────────────────────────────────────────────────
+
+  // ── Tree popup ────────────────────────────────────────────────────────────
+  function showTreePopup() {
+    const popup = document.getElementById('tree-popup');
+    popup.style.display = 'block';
+    requestAnimationFrame(() => popup.classList.add('show'));
+  }
+
+  document.getElementById('tree-close').addEventListener('click', () => {
+    const popup = document.getElementById('tree-popup');
+    popup.classList.remove('show');
+    popup.addEventListener('transitionend', () => { popup.style.display = 'none'; }, { once: true });
+  });
+  // ─────────────────────────────────────────────────────────────────────────
+
+  // ── Welcome banner (once per session) ────────────────────────────────────
+  document.getElementById('welcome-banner').classList.add('show');
+  // ─────────────────────────────────────────────────────────────────────────
+
+  // ── Confetti ──────────────────────────────────────────────────────────────
+  function launchConfetti() {
+    const canvas = document.getElementById('confetti-canvas');
+    const ctx    = canvas.getContext('2d');
+
+    // Match canvas pixels to viewport
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const COLORS = [
+      '#7D9B76',  // sage green
+      '#C4A35A',  // warm gold
+      '#D4B896',  // light tan
+      '#A89F91',  // warm gray
+      '#8B6F47',  // soft brown
+      '#E8D5B0',  // pale cream
+      '#B5936A',  // amber tan
+    ];
+
+    const TOTAL      = 3000;  // animation duration ms
+    const FADE_AT    = 2300;  // begin fade-out at this ms mark
+    const COUNT      = 140;   // number of pieces
+    const GRAVITY    = 0.13;  // pixels/frame² downward pull
+    const WOBBLE_MAG = 0.06;  // random horizontal nudge per frame
+
+    // Build particles — all born just above the top edge
+    const pieces = Array.from({ length: COUNT }, () => {
+      const w = 7 + Math.random() * 9;      // width  7–16 px
+      const h = 4 + Math.random() * 7;      // height 4–11 px (flat rectangle feel)
+      return {
+        x:     Math.random() * canvas.width,
+        y:     -12 - Math.random() * 50,    // start above viewport
+        vx:    (Math.random() - 0.5) * 7,   // −3.5 … +3.5 px/frame
+        vy:    0.5 + Math.random() * 4.5,   // 0.5 … 5 px/frame downward
+        w,
+        h,
+        angle: Math.random() * Math.PI * 2,
+        spin:  (Math.random() - 0.5) * 0.18,
+        color: COLORS[Math.floor(Math.random() * COLORS.length)],
+      };
+    });
+
+    let rafId;
+    const startTime = performance.now();
+
+    function frame(now) {
+      const elapsed = now - startTime;
+
+      if (elapsed >= TOTAL) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        return; // stop loop — no more rAF
+      }
+
+      // Fade out over the last segment
+      const alpha = elapsed < FADE_AT
+        ? 1
+        : 1 - (elapsed - FADE_AT) / (TOTAL - FADE_AT);
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.globalAlpha = Math.max(0, alpha);
+
+      for (const p of pieces) {
+        // Physics step
+        p.vy    += GRAVITY;
+        p.vx    += (Math.random() - 0.5) * WOBBLE_MAG;
+        p.x     += p.vx;
+        p.y     += p.vy;
+        p.angle += p.spin;
+
+        // Draw rotated rectangle
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.angle);
+        ctx.fillStyle = p.color;
+        ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+        ctx.restore();
+      }
+
+      ctx.globalAlpha = 1;
+      rafId = requestAnimationFrame(frame);
+    }
+
+    // Cancel any still-running confetti before starting fresh
+    if (window._confettiRaf) cancelAnimationFrame(window._confettiRaf);
+    window._confettiRaf = rafId = requestAnimationFrame(frame);
+  }
+  // ─────────────────────────────────────────────────────────────────────────
+
+  // ── Crying emoji rain ────────────────────────────────────────────────────
+  function launchEmoji() {
+    const canvas = document.getElementById('confetti-canvas');
+    const ctx    = canvas.getContext('2d');
+
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const EMOJIS  = ['😭'];
+    const TOTAL      = 5000;  // animation duration ms
+    const FADE_AT    = 4300;  // begin fade-out at this ms mark
+    const COUNT      = 45;    // fewer pieces — emoji are larger
+    const GRAVITY    = 0.12;
+    const WOBBLE_MAG = 0.07;
+
+    const pieces = Array.from({ length: COUNT }, () => ({
+      x:     Math.random() * canvas.width,
+      y:     -16 - Math.random() * 60,          // spawn above viewport
+      vx:    (Math.random() - 0.5) * 5,         // gentle sideways drift
+      vy:    0.8 + Math.random() * 4,            // downward speed
+      size:  22 + Math.random() * 22,            // 22–44 px font size
+      angle: (Math.random() - 0.5) * 0.4,       // subtle initial tilt
+      spin:  (Math.random() - 0.5) * 0.06,      // slow wobble
+      emoji: EMOJIS[Math.floor(Math.random() * EMOJIS.length)],
+    }));
+
+    let rafId;
+    const startTime = performance.now();
+
+    function frame(now) {
+      const elapsed = now - startTime;
+
+      if (elapsed >= TOTAL) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        return;
+      }
+
+      const alpha = elapsed < FADE_AT
+        ? 1
+        : 1 - (elapsed - FADE_AT) / (TOTAL - FADE_AT);
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.globalAlpha = Math.max(0, alpha);
+
+      for (const p of pieces) {
+        // Physics step
+        p.vy    += GRAVITY;
+        p.vx    += (Math.random() - 0.5) * WOBBLE_MAG;
+        p.x     += p.vx;
+        p.y     += p.vy;
+        p.angle += p.spin;
+
+        // Draw emoji as text
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.angle);
+        ctx.font          = `${p.size}px serif`;
+        ctx.textAlign     = 'center';
+        ctx.textBaseline  = 'middle';
+        ctx.fillText(p.emoji, 0, 0);
+        ctx.restore();
+      }
+
+      ctx.globalAlpha = 1;
+      rafId = requestAnimationFrame(frame);
+    }
+
+    if (window._confettiRaf) cancelAnimationFrame(window._confettiRaf);
+    window._confettiRaf = rafId = requestAnimationFrame(frame);
+  }
+  // ─────────────────────────────────────────────────────────────────────────
 
   function init() {
     secret     = pickWord();
     currentRow = 0;
     currentCol = 0;
     gameOver   = false;
+    validating = false;
 
     buildBoard();
     buildKeyboard();
+    updateStreakBadge();
 
     document.getElementById('message').classList.remove('show');
     document.getElementById('play-again').style.display = 'none';
+    const card = document.getElementById('definition-card');
+    card.classList.remove('show');
+    card.style.display = 'none';
   }
 
   init();
